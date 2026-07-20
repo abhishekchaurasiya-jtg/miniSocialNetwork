@@ -8,4 +8,4 @@ goose-down:
 	go run ./cmd/goose/main.go down
 
 run:
-	go run ./cmd/api/main.go
+	go run ./main.go

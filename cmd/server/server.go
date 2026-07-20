@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func main() {
+func RunServer() {
 	router := gin.Default()
 
 	router.GET("/health", func(c *gin.Context) {

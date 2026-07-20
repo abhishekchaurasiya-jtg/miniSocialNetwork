@@ -3,7 +3,6 @@ package main
 import (
 	// inbuilt imports
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -19,16 +18,7 @@ import (
 )
 
 func main() {
-	// configuration
-	var sqlDB *sql.DB
-	cnf := config.LoadConfig()
-	sqlDB = db.InitDB(cnf)
-	defer func() {
-		err := sqlDB.Close()
-		if err != nil {
-			log.Printf("Failed to close Database: %v", err)
-		}
-	}()
+	sqlDB := db.InitDB(config.LoadConfig())
 
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatalf("Goose failed to set dialect: %v", err)
