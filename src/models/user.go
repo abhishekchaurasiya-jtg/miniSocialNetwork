@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -17,13 +16,29 @@ const (
 )
 
 const (
-	Single              MaritalStatus = iota
-	Married             MaritalStatus = iota
-	Divorced            MaritalStatus = iota
-	Widowed             MaritalStatus = iota
-	Separated           MaritalStatus = iota
-	DomesticPartnership MaritalStatus = iota
+	Single              MaritalStatus = iota + 1
+	Married            
+	Divorced           
+	Widowed            
+	Separated          
+	DomesticPartnership
 )
+
+var genderResolutionMap = map[Gender]string{
+	MALE: "male",
+	FEMALE: "female",
+	OTHER: "other",
+}
+
+var maritalStatusResolutionMap = map[MaritalStatus]string{
+	Single: "single",
+	Married: "married",
+	Divorced: "divorced",
+	Widowed: "widowed",
+	Separated: "separated",
+	DomesticPartnership: "partnership/common-Law",
+
+}
 
 type User struct {
 	gorm.Model
@@ -59,36 +74,26 @@ func (u *User) CurrentResidentialAddress() *ResidentialAdrress {
 	return nil
 }
 
-// Method to convert the integer literal to respective fullform for logging perpose
-func (g Gender) ToString() (string, error) {
-	switch g {
-	case MALE:
-		return "Male", nil
-	case FEMALE:
-		return "female", nil
-	case OTHER:
-		return "other", nil
-	default:
-		return "", fmt.Errorf("Invalid Literal for Gender")
+// Method to Decode Gender literal to respective String.
+// Returns "Unknown" on getting Invalid literal
+func (g Gender) String() string {
+	value, exist := genderResolutionMap[g]
+	if !exist {
+		return "Unknown"
 	}
+	
+	return value
 }
 
-// method to conver the integer martial status back to string for logging perpose
-func (m MaritalStatus) ToString() (string, error) {
-	switch m {
-	case Single:
-		return "Single", nil
-	case Married:
-		return "Married", nil
-	case Divorced:
-		return "Divorced", nil
-	case Widowed:
-		return "Widowed", nil
-	case Separated:
-		return "Separated", nil
-	case DomesticPartnership:
-		return "Registered Partnership/Common-Law", nil
-	default:
-		return "", fmt.Errorf("invalid literal for MaritalStatus: %d", m)
+
+// Method to Decode MaritalStatus literal to respective String.
+// Returns "Unknown" on getting Invalid literal
+func (m MaritalStatus) String() string {
+	value, exist := maritalStatusResolutionMap[m]
+	if !exist {
+		return "Unknown"
 	}
+	
+	return value
 }
+
