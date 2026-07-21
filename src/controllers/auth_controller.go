@@ -1,12 +1,12 @@
 package controllers
 
 import (
-	"net/http"
+	http "net/http"
+	
+	gin "github.com/gin-gonic/gin"
 
-	"github.com/gin-gonic/gin"
-
-	services "app/src/services"
 	dto "app/src/dto"
+	services "app/src/services"
 )
 
 type AuthController struct {
@@ -19,12 +19,17 @@ func NewAuthController(authService services.AuthService) *AuthController {
 	}
 }
 
+func SetCookieToContext(context *gin.Context, tokens dto.TokensCollection) {
+	var age int = 60 * 24 * 30 * 2 // Seconds * Hours * Days * Months  // 2months(60days)
+	context.SetCookie("refresh_token", tokens.RefreshToken, age, "/auth/refresh", "localhost", false, false)
+}
 
-func (a *AuthController) SignUp(c *gin.Context) {
-	var req dto.CreateUserRequest
+
+func (authCnt *AuthController) SignUp(c *gin.Context) {
+	var request dto.CreateUserRequest
 
 	// Bind and validate request
-	if err := c.ShouldBindJSON(&req); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -32,17 +37,42 @@ func (a *AuthController) SignUp(c *gin.Context) {
 	}
 
 	// Bussiness Logic
-	token, err := a.authService.Register(req)
+	tokens, err := authCnt.authService.Register(request)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
-
+	
+	SetCookieToContext(c, *tokens)
 	// Success response
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "User registered successfully",
-		"token":   token,
+		"token":   tokens.AccessToken,
+	})
+}
+
+func (authCnt *AuthController) Login(c *gin.Context) {
+	var request dto.LoginUserRequest
+
+	// Bind and validate request
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	tokens, err := authCnt.authService.Login(request)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	SetCookieToContext(c, *tokens)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "User registered successfully",
+		"token":   tokens.AccessToken,
 	})
 }

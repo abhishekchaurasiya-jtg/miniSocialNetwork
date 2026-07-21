@@ -35,7 +35,7 @@ func RunServer() {
 		userRepo := repositories.NewUserRepository(gormDB)
 		authService := services.NewAuthService(userRepo, jwtService)
 		authController := controllers.NewAuthController(authService)
-		routes.RegisterAuthRoutes(router, authController)
+		routes.RegisterAuthRoutes(public, authController)
 	}
 
 	router.Run()

@@ -6,13 +6,13 @@ import (
 	controllers "app/src/controllers"
 )
 
-func RegisterAuthRoutes(router *gin.Engine, authController *controllers.AuthController) {
+
+func RegisterAuthRoutes(router gin.IRouter, authController *controllers.AuthController) {
 	auth := router.Group("/auth")
 	{
 		auth.POST("/signup", authController.SignUp)
+		auth.POST("/login", authController.Login)
 
-		// Future APIs
-		// auth.POST("/login", authController.Login)
 		// auth.POST("/refresh", authController.RefreshToken)
 		// auth.POST("/logout", authController.Logout)
 	}
