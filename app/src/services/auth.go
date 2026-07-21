@@ -5,20 +5,24 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+
+	dto "app/src/dto"
 )
 
-
-type TokensCollection struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+func GetJwtService(secret []byte, issuer string) *jwtService{
+	return &jwtService{
+		secret,
+		issuer,
+	}
 }
 
 type JWTService interface {
-	GenerateNewTokens(userID int, email string) (*TokensCollection, error)
+	GenerateNewTokens(userID int, email string) (*dto.TokensCollection, error)
 	GenerateAccessTokenFromRefresh(refreshTokenString string) (string, error)
 	ValidateToken(tokenString string) (*UserClaims, error)
 }
 
+// Claims with respect to the user for the TOKEN 
 type UserClaims struct {
 	UserId int    `json:"user_id"` 
 	Email  string `json:"email"`
@@ -38,13 +42,13 @@ func NewJWTService(secret string, issuer string) JWTService {
 	}
 }
 
-func (j *jwtService) GenerateNewTokens(userID int, email string) (*TokensCollection, error) {
+func (j *jwtService) GenerateNewTokens(userID int, email string) (*dto.TokensCollection, error) {
 	accessTokenClaims := &UserClaims{
 		UserId:    userID,
 		Email:     email,
 		TokenType: "access",
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 4)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			Issuer:    j.issuer,
 		},
@@ -72,7 +76,7 @@ func (j *jwtService) GenerateNewTokens(userID int, email string) (*TokensCollect
 		return nil, err
 	}
 
-	return &TokensCollection{
+	return &dto.TokensCollection{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil

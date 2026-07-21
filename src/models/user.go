@@ -16,28 +16,43 @@ const (
 )
 
 const (
-	Single              MaritalStatus = iota + 1
-	Married            
-	Divorced           
-	Widowed            
-	Separated          
-	DomesticPartnership
+	SINGLE              MaritalStatus = iota + 1
+	MARRIED            
+	DIVORCED           
+	WIDOWED            
+	SEPARATED          
+	DOMESTICPARTNERSHIP
 )
 
-var genderResolutionMap = map[Gender]string{
+var GenderResolutionMap = map[Gender]string{
 	MALE: "male",
 	FEMALE: "female",
 	OTHER: "other",
 }
 
-var maritalStatusResolutionMap = map[MaritalStatus]string{
-	Single: "single",
-	Married: "married",
-	Divorced: "divorced",
-	Widowed: "widowed",
-	Separated: "separated",
-	DomesticPartnership: "partnership/common-Law",
+var GenderChoices = map[string]Gender{
+	"male": MALE,
+	"female": FEMALE, 
+	"other": OTHER,
+}
 
+var MaritalStatusChoices = map[string]MaritalStatus{
+	"single": SINGLE,
+	"married": MARRIED,
+	"divorced": DIVORCED,
+	"widowed": WIDOWED,
+	"separated": SEPARATED,
+	"partnership/common-Law": DOMESTICPARTNERSHIP,
+}
+
+
+var MaritalStatusResolutionMap = map[MaritalStatus]string{
+	SINGLE: "single",
+	MARRIED: "married",
+	DIVORCED: "divorced",
+	WIDOWED: "widowed",
+	SEPARATED: "separated",
+	DOMESTICPARTNERSHIP: "partnership/common-Law",
 }
 
 type User struct {
@@ -77,7 +92,7 @@ func (u *User) CurrentResidentialAddress() *ResidentialAdrress {
 // Method to Decode Gender literal to respective String.
 // Returns "Unknown" on getting Invalid literal
 func (g Gender) String() string {
-	value, exist := genderResolutionMap[g]
+	value, exist := GenderResolutionMap[g]
 	if !exist {
 		return "Unknown"
 	}
@@ -89,7 +104,7 @@ func (g Gender) String() string {
 // Method to Decode MaritalStatus literal to respective String.
 // Returns "Unknown" on getting Invalid literal
 func (m MaritalStatus) String() string {
-	value, exist := maritalStatusResolutionMap[m]
+	value, exist := MaritalStatusResolutionMap[m]
 	if !exist {
 		return "Unknown"
 	}

@@ -21,7 +21,7 @@ func main() {
 	// configuration
 	var sqlDB *sql.DB
 	cnf := config.LoadConfig()
-	sqlDB = db.InitDB(cnf)
+	sqlDB, _ = db.InitDB(cnf)
 	defer func() {
 			err := sqlDB.Close()
 			if err != nil {
