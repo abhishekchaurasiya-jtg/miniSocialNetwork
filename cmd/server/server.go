@@ -8,6 +8,7 @@ import (
 	config "app/config"
 	db_pool "app/db"
 	controllers "app/src/controllers"
+	middlewares "app/src/middlewares"
 	repositories "app/src/repositories"
 	routes "app/src/router"
 	services "app/src/services"
@@ -15,7 +16,7 @@ import (
 
 func healthEndpoint(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"message": "alive",
+		"status": "ok",
 	})
 }
 
@@ -35,7 +36,19 @@ func RunServer() {
 		userRepo := repositories.NewUserRepository(gormDB)
 		authService := services.NewAuthService(userRepo, jwtService)
 		authController := controllers.NewAuthController(authService)
-		routes.RegisterAuthRoutes(public, authController)
+		routes.RegisterPublicAuthRoutes(public, authController)
+	}
+
+	protected := router.Group("")
+	protected.Use(middlewares.AuthTokenMiddleware(jwtService))
+	{
+		// Authentication Private Routes
+		userRepo := repositories.NewUserRepository(gormDB)
+		authService := services.NewAuthService(userRepo, jwtService)
+		authController := controllers.NewAuthController(authService)
+		routes.RegisterPrivateAuthRoutes(protected, authController)
+
+		// Remaining CRUD API's
 	}
 
 	router.Run()

@@ -13,6 +13,7 @@ type UserRepository interface {
 	GetUsersCountByEmail(email string) (int64, error)
 	UpdateUser(user *models.User) error
 	GetUserByEmail(email string) (*models.User, error)
+	PreloadAddresses(user *models.User) error
 }
 
 type userRepository struct {
@@ -56,4 +57,8 @@ func (user_repo *userRepository)GetUserByEmail(email string) (*models.User, erro
 		return nil, err
 	}
 	return user, nil
+}
+
+func (user_repo *userRepository)PreloadAddresses(user *models.User) error {
+	return user_repo.db.Preload("OfficeAddresses").Preload("ResidentialAddresses").First(user, user.ID).Error
 }

@@ -7,13 +7,20 @@ import (
 )
 
 
-func RegisterAuthRoutes(router gin.IRouter, authController *controllers.AuthController) {
+func RegisterPublicAuthRoutes(router gin.IRouter, authController *controllers.AuthController) {
 	auth := router.Group("/auth")
 	{
 		auth.POST("/signup", authController.SignUp)
 		auth.POST("/login", authController.Login)
+		auth.POST("/refresh", authController.RefreshToken)
+	}
+}
 
-		// auth.POST("/refresh", authController.RefreshToken)
-		// auth.POST("/logout", authController.Logout)
+
+func RegisterPrivateAuthRoutes(router gin.IRouter, authController *controllers.AuthController) {
+	auth := router.Group("/auth")
+	{
+		auth.POST("/update_password", authController.UpdatePassword)
+		auth.POST("/logout", authController.LogOut)
 	}
 }
