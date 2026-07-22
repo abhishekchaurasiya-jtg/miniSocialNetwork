@@ -53,8 +53,8 @@ type User struct {
 
 	// relation to office (one to many)
 	// this automatically filters the record on preload where deletedAt is not null
-	OfficeAddresses      []OfficeAddress      `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
-	ResidentialAddresses []ResidentialAdrress `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
+OfficeDetails      []OfficeDetails      `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
+ResidentialDetails []ResidentialDetails `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 }
 
 // repository method..
