@@ -55,24 +55,29 @@ var MaritalStatusResolutionMap = map[MaritalStatus]string{
 
 type User struct {
 	gorm.Model
-	FirstName     string        `gorm:"type:varchar(30);not null"`
-	LastName      string        `gorm:"type:varchar(30);not null"`
-	Gender        Gender        `gorm:"type:int;not null"`
-	Email         string        `gorm:"type:varchar(254);not null;unique"`
-	PasswordHash  string        `gorm:"type:varchar(255);not null"`
-	DateOfBirth   string    `gorm:"type:date;not null"`
-	MaritalStatus MaritalStatus `gorm:"type:int;not null"`
+	FirstName    string        `gorm:"type:varchar(30);not null"`
+	LastName     string        `gorm:"type:varchar(30);not null"`
+	Gender       Gender           `gorm:"type:int;not null"`
+	Email        string        `gorm:"type:varchar(254);not null;uniqueIndex:idx_unique_emails"`
+	PasswordHash string        `gorm:"type:varchar(255);not null"`
+	DateOfBirth  string     `gorm:"type:date;not null"`
+	MaritalStatus MaritalStatus          `gorm:"type:int;not null"`
+	
+	RefreshToken *string       `gorm:"type:varchar(255)"` 
 
-	RefreshToken  *string        `gorm:"type:text;"`
+	// Users who follow this user (Lookups read from FollowingID to discover FollowerID keys)
+	Followers    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowingID;references:ID;joinReferences:FollowerID"`
+	
+	// Users this user is actively following (Lookups read from FollowerID to discover FollowingID keys)
+	Following    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowerID;references:ID;joinReferences:FollowingID"` 
 
-	// relation to office (one to many)
-	// this automatically filters the record on preload where deletedAt is not null
-	OfficeAddresses      []OfficeAddress      `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	ResidentialAddresses []ResidentialAdrress `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	OfficeDetails      []OfficeDetails      `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
+	ResidentialDetails []ResidentialDetails `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 }
 
-// Method to Decode Gender literal to respective String.
-// Returns "Unknown" on getting Invalid literal
+/* Method to Decode Gender literal to respective String.
+Returns "Unknown" on getting Invalid literal
+*/
 func (g Gender) String() string {
 	value, exist := GenderResolutionMap[g]
 	if !exist {
@@ -83,8 +88,9 @@ func (g Gender) String() string {
 }
 
 
-// Method to Decode MaritalStatus literal to respective String.
-// Returns "Unknown" on getting Invalid literal
+/* Method to Decode MaritalStatus literal to respective String.
+Returns "Unknown" on getting Invalid literal
+*/
 func (m MaritalStatus) String() string {
 	value, exist := MaritalStatusResolutionMap[m]
 	if !exist {

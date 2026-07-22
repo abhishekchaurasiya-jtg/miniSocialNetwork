@@ -21,12 +21,12 @@ func main() {
 	sqlDB, _ := db.InitDB(config.LoadConfig())
 
 	if err := goose.SetDialect("postgres"); err != nil {
-		log.Fatalf("Goose failed to set dialect: %v", err)
+		log.Fatalf("Goose failed to set dialect: %s", err.Error())
 	}
 
 	migrationDir, err := filepath.Abs("db/migrations")
 	if err != nil {
-		log.Fatalf("Could not locate migration directory: %v", err)
+		log.Fatalf("Could not locate migration directory: %s", err.Error())
 	}
 
 	args := os.Args[1:]
@@ -38,7 +38,7 @@ func main() {
 
 		err := goose.RunContext(context.Background(), command, sqlDB, migrationDir, subArgs...)
 		if err != nil {
-			log.Fatalf("Goose command executing failed: %v", err)
+			log.Fatalf("Goose command executing failed: %s", err.Error())
 		}
 
 		fmt.Println("Migration command executed successfully!")

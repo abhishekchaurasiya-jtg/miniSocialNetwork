@@ -73,7 +73,7 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 		return nil,nil,err
 	}
 
-	office_address := models.OfficeAddress{
+	office_address := models.OfficeDetails{
 		EmployeeId: request.UserDetails.OfficeDetails.EmployeeCode,
 		ContactNo:  request.UserDetails.OfficeDetails.ContactNo,
 		Address:    request.UserDetails.OfficeDetails.Address,
@@ -83,7 +83,7 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 		Email:      request.UserDetails.OfficeDetails.Email,
 		Name:       request.UserDetails.OfficeDetails.Name,
 	}
-	residential_address := models.ResidentialAdrress{
+	residential_address := models.ResidentialDetails{
 		ContactNo1: request.UserDetails.ResidentialDetails.ContactNo1,
 		ContactNo2: request.UserDetails.ResidentialDetails.ContactNo2,
 		Address:    request.UserDetails.ResidentialDetails.Address,
@@ -101,8 +101,8 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 		DateOfBirth:          request.UserDetails.DateOfBirth,
 		Gender:               request.UserDetails.GetEncodeGender(),
 		MaritalStatus:        request.UserDetails.GetEncodeMaritalStatus(),
-		OfficeAddresses:      []models.OfficeAddress{office_address},
-		ResidentialAddresses: []models.ResidentialAdrress{residential_address},
+		OfficeDetails:      []models.OfficeDetails{office_address},
+		ResidentialDetails: []models.ResidentialDetails{residential_address},
 	}
 	auth_service.userRepo.AppendSingleNewUser(&user)
 
@@ -140,26 +140,26 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 			Gender: user.Gender.String(),
 			MaritalStatus: user.MaritalStatus.String(),
 			ResidentialDetails: dto.ResidentialDetailsResponse{
-				Id: int(user.ResidentialAddresses[0].ID),
+				Id: int(user.ResidentialDetails[0].ID),
 				UserId: int(user.ID),
-				Address: user.ResidentialAddresses[0].Address,
-				City: user.ResidentialAddresses[0].City,
-				State: user.ResidentialAddresses[0].State,
-				Country: user.ResidentialAddresses[0].Country,
-				ContactNo1: user.ResidentialAddresses[0].ContactNo1,
-				ContactNo2: user.ResidentialAddresses[0].ContactNo2,
+				Address: user.ResidentialDetails[0].Address,
+				City: user.ResidentialDetails[0].City,
+				State: user.ResidentialDetails[0].State,
+				Country: user.ResidentialDetails[0].Country,
+				ContactNo1: user.ResidentialDetails[0].ContactNo1,
+				ContactNo2: user.ResidentialDetails[0].ContactNo2,
 			},
 			OfficeDetails: dto.OfficeDetailsResponse{
-				Id: int(user.OfficeAddresses[0].ID),
+				Id: int(user.OfficeDetails[0].ID),
 				UserId: int(user.ID),
-				EmployeeCode: user.OfficeAddresses[0].EmployeeId,
-				Address: user.OfficeAddresses[0].Address,
-				City: user.OfficeAddresses[0].City,
-				State: user.OfficeAddresses[0].State,
-				Country: user.OfficeAddresses[0].Country,
-				ContactNo: user.OfficeAddresses[0].ContactNo,
-				Email: user.OfficeAddresses[0].Email,
-				Name: user.OfficeAddresses[0].Name,
+				EmployeeCode: user.OfficeDetails[0].EmployeeId,
+				Address: user.OfficeDetails[0].Address,
+				City: user.OfficeDetails[0].City,
+				State: user.OfficeDetails[0].State,
+				Country: user.OfficeDetails[0].Country,
+				ContactNo: user.OfficeDetails[0].ContactNo,
+				Email: user.OfficeDetails[0].Email,
+				Name: user.OfficeDetails[0].Name,
 			},
 		},
 		Token: dto.TokenResponse{

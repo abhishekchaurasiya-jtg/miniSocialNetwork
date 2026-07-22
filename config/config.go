@@ -24,7 +24,7 @@ type Config struct {
 func LoadConfig() *Config {
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Println("Failed to Load .env File. Falling Back to System Environment Variables and Default Configs")
+		log.Fatalln("Failed to Load .env File. Falling Back to System Environment Variables and Default Configs")
 	}
 
 	return &Config{
