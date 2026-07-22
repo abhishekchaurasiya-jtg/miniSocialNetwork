@@ -12,7 +12,7 @@ import (
 	config "app/config"
 )
 
-func InitDB(cfn *config.Config) *sql.DB {
+func InitDB(cfn *config.Config) (*sql.DB, *gorm.DB) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s",
 		cfn.DBHost,
 		cfn.DBUser,
@@ -36,7 +36,7 @@ func InitDB(cfn *config.Config) *sql.DB {
 	sqldb.SetConnMaxIdleTime(time.Hour)
 
 	log.Println("Database connection pool successfully initialized!")
-	return sqldb
+	return sqldb, db
 }
 
 // Returns new opned gormdb connection with the provided transcation without creating new connection with postgress.

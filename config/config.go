@@ -7,12 +7,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
+
 type Config struct {
+	// DB Configurations
 	DBHost     string
 	DBName     string
 	DBPort     string
 	DBPassword string
 	DBUser     string
+
+	// JWT Configs
+	JWTSecretKey string
+	JWTIssuer string
 }
 
 func LoadConfig() *Config {
@@ -27,6 +33,9 @@ func LoadConfig() *Config {
 		DBPort:     getEnv("DB_PORT"),
 		DBPassword: getEnv("DB_PASSWORD"),
 		DBUser:     getEnv("DB_USER"),
+
+		JWTSecretKey: getEnv("SECRET_KEY"),
+		JWTIssuer: getEnv("JWT_ISSUER"),
 	}
 }
 

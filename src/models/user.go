@@ -1,8 +1,6 @@
 package models
 
 import (
-	time "time"
-
 	gorm "gorm.io/gorm"
 )
 
@@ -24,20 +22,35 @@ const (
 	DOMESTICPARTNERSHIP
 )
 
-var genderResolutionMap = map[Gender]string{
+var GenderResolutionMap = map[Gender]string{
 	MALE: "male",
 	FEMALE: "female",
 	OTHER: "other",
 }
 
-var maritalStatusResolutionMap = map[MaritalStatus]string{
+var GenderChoices = map[string]Gender{
+	"male": MALE,
+	"female": FEMALE, 
+	"other": OTHER,
+}
+
+var MaritalStatusChoices = map[string]MaritalStatus{
+	"single": SINGLE,
+	"married": MARRIED,
+	"divorced": DIVORCED,
+	"widowed": WIDOWED,
+	"separated": SEPARATED,
+	"partnership/common-Law": DOMESTICPARTNERSHIP,
+}
+
+
+var MaritalStatusResolutionMap = map[MaritalStatus]string{
 	SINGLE: "single",
 	MARRIED: "married",
 	DIVORCED: "divorced",
 	WIDOWED: "widowed",
 	SEPARATED: "separated",
 	DOMESTICPARTNERSHIP: "partnership/common-Law",
-
 }
 
 type User struct {
@@ -47,8 +60,8 @@ type User struct {
 	Gender       Gender           `gorm:"type:int;not null"`
 	Email        string        `gorm:"type:varchar(254);not null;uniqueIndex:idx_unique_emails"`
 	PasswordHash string        `gorm:"type:varchar(255);not null"`
-	DateOfBirth  time.Time     `gorm:"type:date;not null"`
-	MaritalStatus Gender          `gorm:"type:int;not null"`
+	DateOfBirth  string     `gorm:"type:date;not null"`
+	MaritalStatus MaritalStatus          `gorm:"type:int;not null"`
 	
 	RefreshToken *string       `gorm:"type:varchar(255)"` 
 
@@ -66,7 +79,7 @@ type User struct {
 Returns "Unknown" on getting Invalid literal
 */
 func (g Gender) String() string {
-	value, exist := genderResolutionMap[g]
+	value, exist := GenderResolutionMap[g]
 	if !exist {
 		return "Unknown"
 	}
@@ -79,11 +92,10 @@ func (g Gender) String() string {
 Returns "Unknown" on getting Invalid literal
 */
 func (m MaritalStatus) String() string {
-	value, exist := maritalStatusResolutionMap[m]
+	value, exist := MaritalStatusResolutionMap[m]
 	if !exist {
 		return "Unknown"
 	}
 	
 	return value
 }
-

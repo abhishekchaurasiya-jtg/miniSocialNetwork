@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	sqlDB := db.InitDB(config.LoadConfig())
+	sqlDB, _ := db.InitDB(config.LoadConfig())
 
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatalf("Goose failed to set dialect: %s", err.Error())

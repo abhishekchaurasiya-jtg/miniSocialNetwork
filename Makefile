@@ -1,11 +1,11 @@
 goose-status:
-	go run ./cmd/goose/main.go status
+	go run ./cmd/goose/goose.go status
 
 goose-up:
-	go run ./cmd/goose/main.go up
+	go run ./cmd/goose/goose.go up
 
 goose-down:
-	go run ./cmd/goose/main.go down
+	go run ./cmd/goose/goose.go down
 
 run:
 	go run ./main.go
