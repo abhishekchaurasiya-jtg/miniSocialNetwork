@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type OfficeAddress struct {
+type OfficeDetails struct {
 	gorm.Model
 	UserId uint					`gorm:"type:int;not null;index"`
 

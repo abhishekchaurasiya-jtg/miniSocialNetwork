@@ -23,8 +23,8 @@ func UpInitialSchema(ctx context.Context, tx *sql.Tx) error {
 	return gormDb.WithContext(ctx).AutoMigrate(
 		&models.User{},
 		&models.Followers{},
-		&models.OfficeAddress{},
-		&models.ResidentialAdrress{},
+		&models.OfficeDetails{},
+		&models.ResidentialDetails{},
 	)
 }
 
@@ -35,8 +35,8 @@ func DownInitialSchema(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	return gormDB.WithContext(ctx).Migrator().DropTable(
-		&models.ResidentialAdrress{},
-		&models.OfficeAddress{},
+		&models.ResidentialDetails{},
+		&models.OfficeDetails{},
 		&models.Followers{},
 		&models.User{},
 	)

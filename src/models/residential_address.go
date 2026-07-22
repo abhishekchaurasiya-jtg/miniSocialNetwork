@@ -3,7 +3,7 @@ package models
 import "gorm.io/gorm"
 
 
-type ResidentialAdrress struct {
+type ResidentialDetails struct {
 	gorm.Model
 	UserId uint				`gorm:"type:int;not null"`
 	ContactNo1 string		`gorm:"type:varchar(12);not null"`
