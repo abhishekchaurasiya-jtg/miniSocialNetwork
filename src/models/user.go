@@ -1,9 +1,9 @@
 package models
 
 import (
-	"time"
+	time "time"
 
-	"gorm.io/gorm"
+	gorm "gorm.io/gorm"
 )
 
 type Gender uint8
@@ -16,12 +16,12 @@ const (
 )
 
 const (
-	Single              MaritalStatus = iota + 1
-	Married            
-	Divorced           
-	Widowed            
-	Separated          
-	DomesticPartnership
+	SINGLE              MaritalStatus = iota + 1
+	MARRIED            
+	DIVORCED           
+	WIDOWED            
+	SEPARATED          
+	DOMESTICPARTNERSHIP
 )
 
 var genderResolutionMap = map[Gender]string{
@@ -31,34 +31,40 @@ var genderResolutionMap = map[Gender]string{
 }
 
 var maritalStatusResolutionMap = map[MaritalStatus]string{
-	Single: "single",
-	Married: "married",
-	Divorced: "divorced",
-	Widowed: "widowed",
-	Separated: "separated",
-	DomesticPartnership: "partnership/common-Law",
+	SINGLE: "single",
+	MARRIED: "married",
+	DIVORCED: "divorced",
+	WIDOWED: "widowed",
+	SEPARATED: "separated",
+	DOMESTICPARTNERSHIP: "partnership/common-Law",
 
 }
 
 type User struct {
 	gorm.Model
-	FirstName     string        `gorm:"type:varchar(30);not null"`
-	LastName      string        `gorm:"type:varchar(30);not null"`
-	Gender        Gender        `gorm:"type:int;not null"`
-	Email         string        `gorm:"type:varchar(254);not null;unique"`
-	PasswordHash  string        `gorm:"type:varchar(255);not null"`
-	DateOfBirth   time.Time    `gorm:"type:date;not null"`
-	MaritalStatus MaritalStatus `gorm:"type:int;not null"`
-	RefreshToken  *string        `gorm:"type:varchar(255);not null"`
+	FirstName    string        `gorm:"type:varchar(30);not null"`
+	LastName     string        `gorm:"type:varchar(30);not null"`
+	Gender       int           `gorm:"type:int;not null"`
+	Email        string        `gorm:"type:varchar(254);not null;uniqueIndex:idx_unique_emails"`
+	PasswordHash string        `gorm:"type:varchar(255);not null"`
+	DateOfBirth  time.Time     `gorm:"type:date;not null"`
+	MaritalStatus int          `gorm:"type:int;not null"`
+	
+	RefreshToken *string       `gorm:"type:varchar(255)"` 
 
-	// relation to office (one to many)
-	// this automatically filters the record on preload where deletedAt is not null
+	// Users who follow this user (Lookups read from FollowingID to discover FollowerID keys)
+	Followers    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowingID;references:ID;joinReferences:FollowerID"`
+	
+	// Users this user is actively following (Lookups read from FollowerID to discover FollowingID keys)
+	Following    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowerID;references:ID;joinReferences:FollowingID"` 
+
 	OfficeDetails      []OfficeDetails      `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 	ResidentialDetails []ResidentialDetails `gorm:"foreignKey:UserId;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;not null"`
 }
 
-// Method to Decode Gender literal to respective String.
-// Returns "Unknown" on getting Invalid literal
+/* Method to Decode Gender literal to respective String.
+Returns "Unknown" on getting Invalid literal
+*/
 func (g Gender) String() string {
 	value, exist := genderResolutionMap[g]
 	if !exist {
@@ -69,8 +75,9 @@ func (g Gender) String() string {
 }
 
 
-// Method to Decode MaritalStatus literal to respective String.
-// Returns "Unknown" on getting Invalid literal
+/* Method to Decode MaritalStatus literal to respective String.
+Returns "Unknown" on getting Invalid literal
+*/
 func (m MaritalStatus) String() string {
 	value, exist := maritalStatusResolutionMap[m]
 	if !exist {

@@ -1,16 +1,16 @@
 package migrations
 
 import (
+	context "context"
+	sql "database/sql"
+
+	goose "github.com/pressly/goose/v3"
+
 	db_pool "app/db"
 	models "app/src/models"
-	"context"
-	"database/sql"
-
-	"github.com/pressly/goose/v3"
 )
 
 func init() {
-	// Clean, standard registration
 	goose.AddMigrationContext(UpInitialSchema, DownInitialSchema)
 }
 
@@ -22,7 +22,7 @@ func UpInitialSchema(ctx context.Context, tx *sql.Tx) error {
 
 	return gormDb.WithContext(ctx).AutoMigrate(
 		&models.User{},
-		&models.Followers{},
+		&models.Follower{},
 		&models.OfficeDetails{},
 		&models.ResidentialDetails{},
 	)
@@ -37,7 +37,7 @@ func DownInitialSchema(ctx context.Context, tx *sql.Tx) error {
 	return gormDB.WithContext(ctx).Migrator().DropTable(
 		&models.ResidentialDetails{},
 		&models.OfficeDetails{},
-		&models.Followers{},
+		&models.Follower{},
 		&models.User{},
 	)
 }

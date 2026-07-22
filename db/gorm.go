@@ -23,12 +23,12 @@ func InitDB(cfn *config.Config) *sql.DB {
 
 	db, err := gorm.Open(psql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		log.Fatalf("Failed to connect to database: %s", err.Error())
 	}
 
 	sqldb, err := db.DB()
 	if err != nil {
-		log.Fatalf("Critical: Failed to access underlying SQL pool: %v", err)
+		log.Fatalf("Critical: Failed to access underlying SQL pool: %s", err.Error())
 	}
 
 	sqldb.SetMaxIdleConns(10)
@@ -39,6 +39,7 @@ func InitDB(cfn *config.Config) *sql.DB {
 	return sqldb
 }
 
+// Returns new opned gormdb connection with the provided transcation without creating new connection with postgress.
 func GetTxDB(tx *sql.Tx) (*gorm.DB, error) {
 	gormDB, err := gorm.Open(psql.New(psql.Config{
 		Conn: tx, // Attaches directly to Goose's transaction pipeline

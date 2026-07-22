@@ -7,7 +7,7 @@ type OfficeDetails struct {
 	UserId uint					`gorm:"type:int;not null;index"`
 
 	EmployeeId string			`gorm:"type:varchar(10);not null"`
-	ContactNo string			`gorm:"type:varchar(12);not null"`
+	ContactNo string			`gorm:"type:varchar(20);not null"`
 	Email string				`gorm:"type:varchar(254);not null"`
 	Address string				`gorm:"type:varchar(500);not null"`
 	City string					`gorm:"type:varchar(50);not null"`
