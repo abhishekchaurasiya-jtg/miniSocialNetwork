@@ -44,11 +44,11 @@ type User struct {
 	gorm.Model
 	FirstName    string        `gorm:"type:varchar(30);not null"`
 	LastName     string        `gorm:"type:varchar(30);not null"`
-	Gender       int           `gorm:"type:int;not null"`
+	Gender       Gender           `gorm:"type:int;not null"`
 	Email        string        `gorm:"type:varchar(254);not null;uniqueIndex:idx_unique_emails"`
 	PasswordHash string        `gorm:"type:varchar(255);not null"`
 	DateOfBirth  time.Time     `gorm:"type:date;not null"`
-	MaritalStatus int          `gorm:"type:int;not null"`
+	MaritalStatus Gender          `gorm:"type:int;not null"`
 	
 	RefreshToken *string       `gorm:"type:varchar(255)"` 
 
