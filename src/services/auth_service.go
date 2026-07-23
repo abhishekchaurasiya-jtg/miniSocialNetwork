@@ -20,16 +20,16 @@ type AuthService interface {
 }
 
 type authService struct {
-	userRepo repositories.UserRepository
+	authRepo repositories.AuthRepository
 	jwtSvc   JWTService
 }
 
 func NewAuthService(
-	userRepo repositories.UserRepository,
+	authRepo repositories.AuthRepository,
 	jwtSvc JWTService,
 ) AuthService {
 	return &authService{
-		userRepo: userRepo,
+		authRepo: authRepo,
 		jwtSvc:   jwtSvc,
 	}
 }
@@ -50,7 +50,7 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 	*dto.UserCreateResponse, *dto.TokensCollection, error) {
 
 	// Email Verification
-	user_count, err := auth_service.userRepo.GetUsersCountByEmail(request.Email)
+	user_count, err := auth_service.authRepo.GetUsersCountByEmail(request.Email)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -104,9 +104,11 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 		OfficeDetails:      []models.OfficeDetails{office_address},
 		ResidentialDetails: []models.ResidentialDetails{residential_address},
 	}
-	auth_service.userRepo.AppendSingleNewUser(&user)
+	if err := auth_service.authRepo.AppendSingleNewUser(&user); err != nil {
+		return nil, nil, fmt.Errorf("Email already registered with Deactivated account, Contact Admit to activate the account")
+	}
 
-	err = auth_service.userRepo.PreloadAddresses(&user)
+	err = auth_service.authRepo.PreloadAddresses(&user)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to reload user associations: %w", err)
 	}
@@ -119,7 +121,7 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 
 	// updating refreshToken
 	user.RefreshToken = &tokens.RefreshToken
-	err = auth_service.userRepo.UpdateUser(&user)
+	err = auth_service.authRepo.UpdateUser(&user)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to update user session records: %w", err)
 	}
@@ -173,7 +175,7 @@ func (auth_service *authService) Register(request dto.CreateUserRequest) (
 
 func (auth_service *authService) Login(request dto.LoginUserRequest) (
 	*dto.UserLoginResponse, *dto.TokensCollection, error) {
-	user, err := auth_service.userRepo.GetUserByEmail(request.Email)
+	user, err := auth_service.authRepo.GetUserByEmail(request.Email)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -217,7 +219,7 @@ func (auth_service *authService) UpdatePassword(request dto.UpdatePasswordReques
 		return fmt.Errorf("Same Password.")
 	}
 
-	user, err := auth_service.userRepo.GetUserByEmail(email)
+	user, err := auth_service.authRepo.GetUserByEmail(email)
 	if err != nil {
 		return err
 	}
@@ -231,7 +233,7 @@ func (auth_service *authService) UpdatePassword(request dto.UpdatePasswordReques
 	}
 
 	user.PasswordHash = newPasswordHash
-	err = auth_service.userRepo.UpdateUser(user)
+	err = auth_service.authRepo.UpdateUser(user)
 	if err != nil {
 		return err
 	}
@@ -240,13 +242,13 @@ func (auth_service *authService) UpdatePassword(request dto.UpdatePasswordReques
 
 
 func (auth_service *authService)LogOut(email string) error {
-	user, err := auth_service.userRepo.GetUserByEmail(email)
+	user, err := auth_service.authRepo.GetUserByEmail(email)
 	if err != nil {
 		return err
 	}
 
 	user.RefreshToken = nil
-	err = auth_service.userRepo.UpdateUser(user)
+	err = auth_service.authRepo.UpdateUser(user)
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"app/src/models"
+	_ "app/src/dto/custom_validators"
 	// "time"
 )
 
@@ -27,11 +28,11 @@ type OfficeDetailsRequest struct {
 }
 
 type UserDetailsRequest struct {
-	FirstName      string                     `json:"first_name" binding:"required"`
-	LastName       string                     `json:"last_name" binding:"required"`
-	DateOfBirth    string                     `json:"date_of_birth" binding:"required"`
-	Gender         string                     `json:"gender" binding:"required"`
-	MaritalStatus  string                     `json:"marital_status" binding:"required"`
+	FirstName      string                     `json:"first_name" binding:"required,max=30"`
+	LastName       string                     `json:"last_name" binding:"required,max=30"`
+	DateOfBirth    string                     `json:"date_of_birth" binding:"required,datetime=2006-01-02"`
+	Gender         string                     `json:"gender" binding:"required,genderValidator"`
+	MaritalStatus  string                     `json:"marital_status" binding:"required,maritalStatusValidator"`
 	ResidentialDetails ResidentialDetailsRequest `json:"residential_details" binding:"required"`
 	OfficeDetails      OfficeDetailsRequest      `json:"office_details" binding:"required"`
 }
@@ -68,12 +69,19 @@ type LoginUserRequest struct {
 	Email 		string				`json:"email" binding:"required,email"`
 	Password 	string 				`json:"password" binding:"required,min=8"`
 }
-
 // Login Request END
 
-// UpdatePassword schema
 
+// UpdatePassword schema
 type UpdatePasswordRequest struct {
 	OldPassword string `json:"old_password" binding:"required,min=8"`
 	NewPassword string `json:"new_password" binding:"required,min=8"`
+}
+
+type UpdateUserRequest struct {
+	FirstName 		*string `json:"first_name" binding:"omitempty,max=30"`
+	LastName 		*string `json:"last_name" binding:"omitempty,max=30"`
+	Gender 			*string	`json:"gender" binding:"omitempty,genderValidator"`
+	DateOfBirth 	*string	`json:"date_of_birth" binding:"omitempty,datetime=2006-01-02"`  // YYYY-MM-DD
+	MaritalStatus 	*string `json:"marital_status" binding:"omitempty,maritalStatusValidator"`
 }

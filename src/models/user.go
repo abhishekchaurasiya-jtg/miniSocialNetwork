@@ -63,7 +63,7 @@ type User struct {
 	DateOfBirth  string     `gorm:"type:date;not null"`
 	MaritalStatus MaritalStatus          `gorm:"type:int;not null"`
 	
-	RefreshToken *string       `gorm:"type:varchar(255)"` 
+	RefreshToken *string       `gorm:"type:text"` 
 
 	// Users who follow this user (Lookups read from FollowingID to discover FollowerID keys)
 	Followers    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowingID;references:ID;joinReferences:FollowerID"`
