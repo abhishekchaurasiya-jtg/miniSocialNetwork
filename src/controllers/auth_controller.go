@@ -2,7 +2,7 @@ package controllers
 
 import (
 	http "net/http"
-	"time"
+	time "time"
 
 	gin "github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -93,7 +93,7 @@ func (authCnt *AuthController) Login(c *gin.Context) {
 
 func (authCnt *AuthController) RefreshToken(context *gin.Context) {
 	cookieValue, err := context.Cookie("refresh_token")
-
+	
 	if err != nil {
 		context.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Authentication cookie missing or expired",

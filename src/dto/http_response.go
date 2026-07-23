@@ -46,12 +46,13 @@ type UserDetailsResponse struct {
 	OfficeDetails      OfficeDetailsResponse      `json:"office_details" validate:"required"`      
 }
 
+
 type UserCreateResponse struct {
 	ID           int                 `json:"id" validate:"required"`
 	UserId       int                 `json:"user_id" validate:"required"`
-	Email        string              `json:"email" validate:"required,email"` 
+	Email        string              `json:"email" validate:"required,email,max=254"` 
 	LastModified time.Time           `json:"last_modified" validate:"required"`
-	UserDetail   UserDetailsResponse `json:"user_details" validate:"required"`   
+	UserDetail   UserDetailsResponse `json:"user_details" validate:"required"`  
 	Token        TokenResponse       `json:"token" validate:"required"`          
 }
 
@@ -68,4 +69,34 @@ type UserDetailsLoginResponse struct {
 type UserLoginResponse struct {
 	Token TokenResponse				 `json:"token" validate:"required"`
 	User  UserDetailsLoginResponse   `json:"user" validate:"required"`
+}
+
+
+type UpdateUserResponse struct {
+	ID           int                 `json:"id" validate:"required"`
+	UserId       int                 `json:"user_id" validate:"required"`
+	Email        string              `json:"email" validate:"required,email,max=254"` 
+	LastModified time.Time           `json:"last_modified" validate:"required"`
+	UserDetail   UserDetailsResponse `json:"user_details" validate:"required"`  
+}
+
+type DeleteUserResponse struct {
+	ID           int                 `json:"id" validate:"required"`
+	UserId       int                 `json:"user_id" validate:"required"`
+	Email        string              `json:"email" validate:"required,email,max=254"` 
+	LastModified time.Time           `json:"last_modified" validate:"required"`
+	UserDetail   UserDetailsResponse `json:"user_details" validate:"required"`  
+}
+
+type GetUserResponse struct {
+	ID           int                 `json:"id" validate:"required"`
+	UserId       int                 `json:"user_id" validate:"required"`
+	Email        string              `json:"email" validate:"required,email,max=254"` 
+	LastModified time.Time           `json:"last_modified" validate:"required"`
+	UserDetail   UserDetailsResponse `json:"user_details" validate:"required"`  
+}
+
+type GetActiveUsersResponseItem struct {
+	UserID int `json:"userId" validate:"required"`
+	Email string `json:"email" validate:"required,email"`
 }

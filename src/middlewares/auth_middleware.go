@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"log"
 	http "net/http"
 	strings "strings"
 
@@ -38,7 +39,10 @@ func AuthTokenMiddleware(jwtService services.JWTService) gin.HandlerFunc {
 			return 
 		}
 
-		context.Set("UserID", userClaims.ID)
+		log.Println("AuthMiddleware: UserToken Verified.")
+		log.Println("AuthMiddleware: Recieved Values", userClaims.UserId, userClaims.Email)
+
+		context.Set("UserID", userClaims.UserId)
 		context.Set("Email", userClaims.Email)
 
 		context.Next()

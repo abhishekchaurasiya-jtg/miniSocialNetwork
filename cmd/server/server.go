@@ -3,11 +3,13 @@ package server
 import (
 	http "net/http"
 
+	cors "github.com/gin-contrib/cors"
 	gin "github.com/gin-gonic/gin"
 
+	_ "app/src/dto/custom_validators"
 	config "app/config"
-	db_pool "app/db"
 	controllers "app/src/controllers"
+	db_pool "app/db"
 	middlewares "app/src/middlewares"
 	repositories "app/src/repositories"
 	routes "app/src/router"
@@ -26,29 +28,41 @@ func RunServer() {
 	jwtService := services.GetJwtService([]byte(cnf.JWTSecretKey), cnf.JWTIssuer)
 
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins: true,
+		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true, // Enables cookies 
+	}))
+	
+	vrouter := router.Group("/api/v1")
 	// Public routes
-	public := router.Group("")
+	public := vrouter.Group("")
 	{
 		// Health API
 		public.GET("/health", healthEndpoint)
 
 		// Authentication API
-		userRepo := repositories.NewUserRepository(gormDB)
-		authService := services.NewAuthService(userRepo, jwtService)
+		authRepo := repositories.NewAuthRepository(gormDB)
+		authService := services.NewAuthService(authRepo, jwtService)
 		authController := controllers.NewAuthController(authService)
 		routes.RegisterPublicAuthRoutes(public, authController)
 	}
 
-	protected := router.Group("")
+	protected := vrouter.Group("")
 	protected.Use(middlewares.AuthTokenMiddleware(jwtService))
 	{
 		// Authentication Private Routes
-		userRepo := repositories.NewUserRepository(gormDB)
-		authService := services.NewAuthService(userRepo, jwtService)
+		authRepo := repositories.NewAuthRepository(gormDB)
+		authService := services.NewAuthService(authRepo, jwtService)
 		authController := controllers.NewAuthController(authService)
 		routes.RegisterPrivateAuthRoutes(protected, authController)
 
-		// Remaining CRUD API's
+		userRepo := repositories.NewUserRepository(gormDB)
+		userService := services.NewUserService(userRepo)
+		userController := controllers.NewUserController(userService)
+		routes.RegisterPrivateUserRoutes(protected, userController)
 	}
 
 	router.Run()
