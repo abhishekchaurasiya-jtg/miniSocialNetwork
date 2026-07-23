@@ -42,15 +42,15 @@ var maritalStatusResolutionMap = map[MaritalStatus]string{
 
 type User struct {
 	gorm.Model
-	FirstName    string        `gorm:"type:varchar(30);not null"`
-	LastName     string        `gorm:"type:varchar(30);not null"`
-	Gender       Gender           `gorm:"type:int;not null"`
-	Email        string        `gorm:"type:varchar(254);not null;uniqueIndex:idx_unique_emails"`
+	FirstName    string        `gorm:"type:varchar(255);not null" validate:"required,gt=0,max=70"`
+	LastName     *string       `gorm:"type:varchar(255)" validate:"omitempty,gt=0,max=100"`
+	Gender       Gender        `gorm:"not null;check:chk_gender,gender BETWEEN	1 AND 3"`
+	Email        string        `gorm:"type:varchar(255);not null;uniqueIndex:idx_unique_email_lower,expression:LOWER(email)"`
 	PasswordHash string        `gorm:"type:varchar(255);not null"`
-	DateOfBirth  time.Time     `gorm:"type:date;not null"`
-	MaritalStatus Gender          `gorm:"type:int;not null"`
+	DateOfBirth  time.Time     `gorm:"type:date;not null;check_date_birth <= (CURRENT_DATE - INTERVAL '12 years')"`		// 12 years constaraint
+	MaritalStatus MaritalStatus`gorm:"not null;"`
 	
-	RefreshToken *string       `gorm:"type:varchar(255)"` 
+	RefreshToken *string       `gorm:"type:text"`
 
 	// Users who follow this user (Lookups read from FollowingID to discover FollowerID keys)
 	Followers    []User        `gorm:"many2many:followers;foreignKey:ID;joinForeignKey:FollowingID;references:ID;joinReferences:FollowerID"`
